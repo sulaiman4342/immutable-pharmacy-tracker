@@ -18,6 +18,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -66,6 +67,23 @@ public class BlockchainService {
         } catch (Exception e) {
             log.error("Verify failed for {}: {}", prescriptionHash, e.getMessage());
             throw new RuntimeException("Could not verify prescription: " + e.getMessage());
+        }
+    }
+
+    public Map<String, String> getRole(String walletAddress) {
+        try {
+            boolean doctor = pharmacyTracker.isDoctor(walletAddress).send();
+            boolean pharmacist = pharmacyTracker.isPharmacist(walletAddress).send();
+            boolean isAdmin = walletAddress.equalsIgnoreCase(pharmacyTracker.admin().send());
+
+            String role = isAdmin ? "ADMIN" : doctor ? "AUTHORIZED_DOCTOR"
+                    : pharmacist ? "AUTHORIZED_PHARMACIST" : "UNREGISTERED";
+            String status = (doctor || pharmacist || isAdmin) ? "ACTIVE" : "INACTIVE";
+
+            return Map.of("role", role, "status", status, "address", walletAddress);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Role check failed: " + e.getMessage());
         }
     }
 
