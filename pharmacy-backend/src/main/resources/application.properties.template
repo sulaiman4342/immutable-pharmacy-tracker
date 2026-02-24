@@ -1,0 +1,16 @@
+# Copy this file to application.properties and fill in your values
+
+server.port=8081
+
+blockchain.rpc-url=http://127.0.0.1:8545
+blockchain.contract-address=YOUR_DEPLOYED_CONTRACT_ADDRESS_HERE
+blockchain.admin-private-key=YOUR_HARDHAT_ACCOUNT_0_PRIVATE_KEY
+blockchain.doctor-private-key=YOUR_HARDHAT_ACCOUNT_1_PRIVATE_KEY
+blockchain.pharmacist-private-key=YOUR_HARDHAT_ACCOUNT_2_PRIVATE_KEY
+
+spring.datasource.url=jdbc:h2:mem:pharmacydb
+spring.datasource.driver-class-name=org.h2.Driver
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.h2.console.enabled=true
+
+logging.level.com.pharmacy=DEBUG
