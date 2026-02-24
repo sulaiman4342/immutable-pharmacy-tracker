@@ -1,0 +1,22 @@
+# Never commit private keys or secrets
+**/application.properties
+**/.env
+**/.env.local
+
+# Dependencies
+**/node_modules/
+
+# Build outputs
+**/target/
+**/build/
+**/artifacts/
+**/cache/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
