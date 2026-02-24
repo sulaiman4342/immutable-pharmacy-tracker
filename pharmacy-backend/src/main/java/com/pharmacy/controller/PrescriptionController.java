@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @Slf4j
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -27,6 +29,11 @@ public class PrescriptionController {
     public ResponseEntity<PrescriptionStatusDTO> verify(@PathVariable String hash) {
         log.info("Verify request for hash: {}", hash);
         return ResponseEntity.ok(blockchainService.verifyPrescription(hash));
+    }
+
+    @GetMapping("/api/auth/role/{address}")
+    public ResponseEntity<Map<String, String>> getRole(@PathVariable String address) {
+        return ResponseEntity.ok(blockchainService.getRole(address));
     }
 
     // ── WRITE: Admin ──────────────────────────────────────────────────────────
