@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { blockchainAPI } from '../api/blockchain';
+import RoleBadge from '../components/shared/RoleBadge';
 import HashDisplay from '../components/shared/HashDisplay';
+
+const ADMIN_ADDRESS = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266';
 
 function RegistryPanel({ title, color, icon, onSubmit, loading, result, error }) {
   const [address, setAddress] = useState('');
@@ -77,6 +80,7 @@ function RegistryPanel({ title, color, icon, onSubmit, loading, result, error })
 }
 
 export default function AdminDashboard() {
+  const [role, setRole] = useState('UNKNOWN');
   const [doctorLoading,     setDoctorLoading]     = useState(false);
   const [doctorResult,      setDoctorResult]      = useState(null);
   const [doctorError,       setDoctorError]       = useState('');
@@ -100,6 +104,12 @@ export default function AdminDashboard() {
     finally { setPharmacistLoading(false); }
   };
 
+  useEffect(() => {
+    blockchainAPI.getRole(ADMIN_ADDRESS)
+      .then((result) => setRole(result.role || result.status || 'UNKNOWN'))
+      .catch(() => setRole('UNKNOWN'));
+  }, []);
+
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '40px 24px' }}>
 
@@ -111,6 +121,9 @@ export default function AdminDashboard() {
         <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
           Authorize wallet addresses for Doctor and Pharmacist roles on the blockchain
         </p>
+        <div style={{ marginTop: '12px', display: 'inline-flex' }}>
+          <RoleBadge role={role} />
+        </div>
         <div style={{
           marginTop: '16px', padding: '12px 16px',
           background: 'rgba(255,183,3,0.06)', border: '1px solid rgba(255,183,3,0.2)',

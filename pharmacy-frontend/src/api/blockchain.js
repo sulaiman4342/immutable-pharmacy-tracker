@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'http://localhost:8081/api',
+  baseURL: process.env.REACT_APP_API_BASE_URL || 'http://localhost:8081/api',
   headers: { 'Content-Type': 'application/json' }
 });
 
@@ -9,7 +9,12 @@ const API = axios.create({
 API.interceptors.response.use(
   response => response.data,
   error => {
-    const message = error.response?.data?.message
+    const backendMessage =
+      error.response?.data?.message
+      || (typeof error.response?.data === 'string' ? error.response.data : null)
+      || error.response?.data?.error;
+
+    const message = backendMessage
       || error.message
       || 'Blockchain transaction failed';
     return Promise.reject(new Error(message));
@@ -24,6 +29,9 @@ export const blockchainAPI = {
 
   verify: (hash) =>
     API.get(`/prescriptions/verify/${hash}`),
+
+  getRole: (walletAddress) =>
+    API.get(`/auth/role/${walletAddress}`),
 
   // ── DOCTOR ────────────────────────────────────────────────────
   issue: (patientHash, medicineHash, durationInDays, doctorAddress) =>

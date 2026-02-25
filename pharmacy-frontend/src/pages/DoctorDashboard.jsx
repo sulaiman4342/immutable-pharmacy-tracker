@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import { blockchainAPI } from '../api/blockchain';
-// import StatusBadge from '../components/shared/StatusBadge';
+import RoleBadge from '../components/shared/RoleBadge';
 import HashDisplay from '../components/shared/HashDisplay';
 
 // Hardhat Account #1 — pre-filled for demo
@@ -79,6 +79,7 @@ function TxButton({ onClick, loading, children, color = 'var(--accent-blue)' }) 
 }
 
 export default function DoctorDashboard() {
+  const [role, setRole] = useState('UNKNOWN');
   // Issue form
   const [patientId,  setPatientId]  = useState('');
   const [medicine,   setMedicine]   = useState('');
@@ -113,6 +114,12 @@ export default function DoctorDashboard() {
     }
   };
 
+  useEffect(() => {
+    blockchainAPI.getRole(DOCTOR_ADDRESS)
+      .then((result) => setRole(result.role || result.status || 'UNKNOWN'))
+      .catch(() => setRole('UNKNOWN'));
+  }, []);
+
   const handleRevoke = async () => {
     if (!revokeHash) { setRevokeError('Prescription hash is required'); return; }
     setRevokeLoading(true); setRevokeError(''); setRevokeResult(null);
@@ -144,7 +151,7 @@ export default function DoctorDashboard() {
         <div style={{
           marginTop: '12px', padding: '8px 14px',
           background: 'var(--bg-card)', border: '1px solid var(--border)',
-          borderRadius: 'var(--radius)', display: 'inline-block',
+          borderRadius: 'var(--radius)', display: 'inline-flex', alignItems: 'center', gap: '8px',
         }}>
           <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
             SIGNING AS&nbsp;
@@ -152,6 +159,7 @@ export default function DoctorDashboard() {
           <span style={{ fontSize: '11px', color: 'var(--accent-blue)', fontFamily: 'var(--font-mono)' }}>
             {DOCTOR_ADDRESS}
           </span>
+          <RoleBadge role={role} />
         </div>
       </div>
 
