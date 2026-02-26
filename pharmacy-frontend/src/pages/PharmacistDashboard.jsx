@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { blockchainAPI } from '../api/blockchain';
 import StatusBadge from '../components/shared/StatusBadge';
+import RoleBadge from '../components/shared/RoleBadge';
 import HashDisplay from '../components/shared/HashDisplay';
 
 const PHARMACIST_ADDRESS = '0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC';
 
 export default function PharmacistDashboard() {
+  const [role, setRole] = useState('UNKNOWN');
   const [verifyHash,    setVerifyHash]    = useState('');
   const [verifyResult,  setVerifyResult]  = useState(null);
   const [verifyLoading, setVerifyLoading] = useState(false);
@@ -46,6 +48,12 @@ export default function PharmacistDashboard() {
     verifyResult.status === 'VALID' &&
     !verifyResult.expired;
 
+  useEffect(() => {
+    blockchainAPI.getRole(PHARMACIST_ADDRESS)
+      .then((result) => setRole(result.role || result.status || 'UNKNOWN'))
+      .catch(() => setRole('UNKNOWN'));
+  }, []);
+
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '40px 24px' }}>
 
@@ -57,6 +65,9 @@ export default function PharmacistDashboard() {
         <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
           Verify prescription integrity and atomically redeem against the blockchain
         </p>
+        <div style={{ marginTop: '12px', display: 'inline-flex' }}>
+          <RoleBadge role={role} />
+        </div>
       </div>
 
       {/* Step 1: Verify */}
